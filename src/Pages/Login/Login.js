@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import PrimaryButton from "../../Components/Button/PrimaryButton";
+import SmallSpinner from "../../Components/Spinner/SmallSpinner";
 import { AuthContext } from "../../contexts/AuthProvider";
 
 const Login = () => {
@@ -17,10 +18,15 @@ const Login = () => {
     const email = event.target.email.value;
     const password = event.target.password.value;
 
-    signin(email, password).then((result) => {
-      toast.success("Login Successful");
-      navigate(from, { replace: true });
-    });
+    signin(email, password)
+      .then((result) => {
+        toast.success("Login Successful");
+        navigate(from, { replace: true });
+      })
+      .catch((error) => {
+        toast.error(error.message);
+        setLoading(false);
+      });
   };
 
   return (
@@ -73,7 +79,7 @@ const Login = () => {
               type="submit"
               classes="w-full px-8 py-3 font-semibold rounded-md bg-gray-900 hover:bg-gray-700 hover:text-white text-gray-100"
             >
-              Sign in
+              {loading ? <SmallSpinner /> : "Sign in"}
             </PrimaryButton>
           </div>
         </form>
