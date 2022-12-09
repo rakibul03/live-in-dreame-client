@@ -22,7 +22,6 @@ const Signup = () => {
     const email = event.target.email.value;
     const password = event.target.password.value;
 
-    // 1b9a923b648552fadb12712897f9fd97
     const formData = new FormData();
     formData.append("image", image);
     const url = `https://api.imgbb.com/1/upload?key=1b9a923b648552fadb12712897f9fd97`;
@@ -46,6 +45,7 @@ const Signup = () => {
       .catch((error) => console.log(error.message));
   };
 
+  // Google signup
   const handleGoogleSignup = () => {
     signInWithGoogle()
       .then((result) => {
