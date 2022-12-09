@@ -1,8 +1,9 @@
 import React from "react";
 import { useContext } from "react";
 import { toast } from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import PrimaryButton from "../../Components/Button/PrimaryButton";
+import SmallSpinner from "../../Components/Spinner/SmallSpinner";
 import { AuthContext } from "../../contexts/AuthProvider";
 
 const Signup = () => {
@@ -14,6 +15,10 @@ const Signup = () => {
     setLoading,
     signInWithGoogle,
   } = useContext(AuthContext);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -34,25 +39,39 @@ const Signup = () => {
         // Create new user with email and password
         createUser(email, password)
           .then(() => {
-            updateUserProfile(name, data.data.display_url).then(
-              verifyEmail().then(() => {
-                toast.success("Please check your email for verification link");
-              })
-            );
+            updateUserProfile(name, data.data.display_url)
+              .then(
+                verifyEmail().then(() => {
+                  toast.success(
+                    "Please check your email for verification link"
+                  );
+                  navigate(from, { replace: true });
+                })
+              )
+              .catch((error) => {
+                toast.error(error.message);
+              });
           })
-          .catch((error) => console.log(error.message));
+          .catch((error) => {
+            toast.error(error.message);
+            setLoading(false);
+          });
       })
-      .catch((error) => console.log(error.message));
+      .catch((error) => {
+        toast.error(error.message);
+      });
   };
 
   // Google signup
   const handleGoogleSignup = () => {
     signInWithGoogle()
-      .then((result) => {
-        const user = result.user;
-        console.log(user);
+      .then(() => {
+        toast.success("Signup Successful");
+        navigate(from, { replace: true });
       })
-      .catch((error) => console.log(error.message));
+      .catch((error) => {
+        toast.error(error.message);
+      });
   };
 
   return (
@@ -131,7 +150,7 @@ const Signup = () => {
                 type="submit"
                 classes="w-full px-8 py-3 font-semibold rounded-md bg-gray-900 hover:bg-gray-700 hover:text-white text-gray-100"
               >
-                Sign up
+                {loading ? <SmallSpinner /> : "Sign Up"}
               </PrimaryButton>
             </div>
           </div>
